@@ -26,7 +26,24 @@ from rclpy.lifecycle import LifecycleNode
 from rclpy.lifecycle import TransitionCallbackReturn
 from rclpy.lifecycle import LifecycleState
 
+import numpy as np
 import torch
+
+# Patch torch.from_numpy for compatibility with torch 2.10+
+# torch.from_numpy's C extension rejects arrays in some environments.
+# torch.as_tensor handles any array-like and shares memory when possible.
+_original_from_numpy = torch.from_numpy
+
+
+def _patched_from_numpy(ndarray):
+    try:
+        return _original_from_numpy(ndarray)
+    except TypeError:
+        return torch.as_tensor(np.ascontiguousarray(ndarray))
+
+
+torch.from_numpy = _patched_from_numpy
+
 from ultralytics import YOLO, YOLOWorld, YOLOE
 from ultralytics.engine.results import Results
 from ultralytics.engine.results import Boxes
