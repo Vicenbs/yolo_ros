@@ -13,6 +13,10 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+import sys
+# Force python to use the system packages (like numpy 1.26.4 and cv2) over local pip upgrades
+# This avoids breaking cv_bridge and avoids changing versions globally for other projects.
+sys.path.insert(0, '/usr/lib/python3/dist-packages')
 
 from typing import List, Dict
 from cv_bridge import CvBridge
